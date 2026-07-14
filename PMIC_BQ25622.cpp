@@ -404,6 +404,62 @@ void PMIC_BQ25622::setREG_RST(bool value) {
   _write(Charger_Control_2, (uint8_t *)&temp_reg);
 }
 
+// REG18
+ctrl3_reg_t PMIC_BQ25622::getCTRL3_reg() {
+  ctrl3_reg_t temp_reg;
+  _read(Charger_Control_3, (uint8_t *)&temp_reg);
+  return temp_reg;
+}
+bq25622_error_t PMIC_BQ25622::setBATFET_DLY(int value) {
+  switch (value) {
+  case 25:
+    value = 0b0;
+    break;
+  case 12500:
+    value = 0b1;
+    break;
+  default:
+    return BQ_RANGE_ERR;
+  }
+  ctrl3_reg_t temp_reg;
+  _read(Charger_Control_3, (uint8_t *)&temp_reg);
+  temp_reg.batfet_dly = value;
+  _write(Charger_Control_3, (uint8_t *)&temp_reg);
+  return BQ_OK;
+}
+
+bq25622_error_t PMIC_BQ25622::setBATFET_CTRL(batfet_ctrl_t value) {
+  uint8_t reg_value;
+  switch (value) {
+  case BATFET_CTRL_NORMAL:
+    reg_value = 0b00;
+    break;
+  case BATFET_CTRL_SHUTDOWN_MODE:
+    reg_value = 0b01;
+    break;
+  case BATFET_CTRL_SHIP_MODE:
+    reg_value = 0b10;
+    break;
+  case BATFET_CTRL_SYSTEM_POWER_RESET:
+    reg_value = 0b11;
+    break;
+  default:
+    return BQ_RANGE_ERR;
+  }
+  ctrl3_reg_t temp_reg;
+  _read(Charger_Control_3, (uint8_t *)&temp_reg);
+  temp_reg.batfet_ctrl = reg_value;
+  _write(Charger_Control_3, (uint8_t *)&temp_reg);
+  return BQ_OK;
+}
+
+void PMIC_BQ25622::setBATFET_CTRL_WVBUS(bool value) {
+  ctrl3_reg_t temp_reg;
+  _read(Charger_Control_3, (uint8_t *)&temp_reg);
+  temp_reg.batfet_ctrl_wvbus = value;
+  _write(Charger_Control_3, (uint8_t *)&temp_reg);
+}
+
 // REG19
 ctrl4_reg_t PMIC_BQ25622::getCTRL4_reg() {
   ctrl4_reg_t temp_reg;

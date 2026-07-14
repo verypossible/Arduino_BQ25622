@@ -27,6 +27,7 @@ typedef enum {
   Charge_Timer_Control = 0x15,
   Charger_Control_1 = 0x16,
   Charger_Control_2 = 0x17,
+  Charger_Control_3 = 0x18,
   Charger_Control_4 = 0x19,
   NTC_Control_0 = 0x1A,
   Charger_Status_0 = 0x1D,
@@ -128,6 +129,21 @@ typedef struct {
   uint8_t treg : 1;
   uint8_t reg_rst : 1;
 } ctrl2_reg_t __attribute__(());
+
+typedef struct {
+  uint8_t reserved1 : 3;
+  uint8_t pfm_fwd_dis : 1;
+  uint8_t batfet_ctrl_wvbus : 1;
+  uint8_t batfet_dly : 1;
+  uint8_t batfet_ctrl : 2;
+} ctrl3_reg_t __attribute__(());
+
+typedef enum {
+  BATFET_CTRL_NORMAL,
+  BATFET_CTRL_SHUTDOWN_MODE,
+  BATFET_CTRL_SHIP_MODE,
+  BATFET_CTRL_SYSTEM_POWER_RESET,
+} batfet_ctrl_t;
 
 typedef struct {
   uint8_t chg_rate : 2;
@@ -302,6 +318,12 @@ public:
   void setCONV_FREQ(int value);
   bq25622_error_t setTREG(int value);
   void setREG_RST(bool value);
+
+  // REG18
+  ctrl3_reg_t getCTRL3_reg();
+  bq25622_error_t setBATFET_DLY(int value);
+  bq25622_error_t setBATFET_CTRL(batfet_ctrl_t value);
+  void setBATFET_CTRL_WVBUS(bool value);
 
   // REG19
   ctrl4_reg_t getCTRL4_reg();
